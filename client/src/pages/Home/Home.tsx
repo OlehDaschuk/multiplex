@@ -8,11 +8,11 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
+SwiperCore.use([Navigation, Scrollbar, Mousewheel]);
 
 import { getUserByUUID } from '../../api/user';
 import { getFilms, getNumOfAvailableFilms } from '../../api/film';
-
-SwiperCore.use([Navigation, Scrollbar, Mousewheel]);
+import IFilms from '../../interfaces/film';
 
 export default function Home() {
   function windowResizeHandler() {
@@ -20,22 +20,30 @@ export default function Home() {
   }
 
   const [windowWidth, setwindowWidth] = useState(window.innerWidth);
+  const { data: numOfAvailableFilms } = useQuery({
+    queryKey: ['numOfAvailableFilms'],
+    queryFn: getNumOfAvailableFilms,
+  });
+
   const {
     data: films,
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
+    hasNextPage,
   } = useInfiniteQuery({
     queryKey: ['films'],
-    queryFn: ({ pageParam = { offset: 0, limit: 2 } }) => {
+    queryFn: ({ pageParam = { offset: 0, limit: 4 } }) => {
       return getFilms(pageParam.offset, pageParam.limit);
     },
-    getNextPageParam: async (lastPage, allPages) => {
-      const numOfAvailable = await getNumOfAvailableFilms();
-      if (!allPages.at(-1)?.data.length) return;
-      // console.log(getNumOfAvailableFilms);
+    getNextPageParam: (lastPage, allPages) => {
+      const numOfCurentFilms = allPages.reduce((acc, v) => {
+        return [...acc, ...v.data];
+      }, [] as IFilms[]).length;
 
-      return allPages.length;
+      if (numOfCurentFilms >= +numOfAvailableFilms?.data.count) return;
+      return;
+      return { offset: numOfCurentFilms, limit: 2 };
     },
   });
 
@@ -56,12 +64,7 @@ export default function Home() {
         slidesPerView={'auto'}
         navigation={windowWidth >= 1024}
         direction={windowWidth >= 1024 ? 'horizontal' : 'vertical'}
-        onSwiper={() => fetchNextPage()}
-        onReachEnd={(swiper) => {
-          console.log(1234);
-
-          fetchNextPage();
-        }}
+        onReachEnd={() => hasNextPage && fetchNextPage()}
         className="h-full">
         {films?.pages.map((group, i) => {
           return (
@@ -82,7 +85,7 @@ export default function Home() {
           );
         })}
 
-        {(isFetchingNextPage || isFetching) && (
+        {isFetchingNextPage || isFetching ? (
           <SwiperSlide className="w-full lg:w-96 grid place-content-center">
             <div className={styles['lds-spinner']}>
               <div></div>
@@ -98,6 +101,10 @@ export default function Home() {
               <div></div>
               <div></div>
             </div>
+          </SwiperSlide>
+        ) : (
+          <SwiperSlide className="bg-white w-full lg:w-96 grid place-content-center">
+            <span>Це всі доступні фільми...</span>
           </SwiperSlide>
         )}
       </Swiper>

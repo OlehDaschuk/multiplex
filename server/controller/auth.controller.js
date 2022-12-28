@@ -48,12 +48,17 @@ class authController {
       const {
         rows: [user],
       } = await pool.query(`SELECT * FROM users WHERE email = $1`, [email]);
-      if (!user.length) res.status(400).json({ error: '' });
+      if (!user?.length) {
+        res.status(400).json({ error: '' });
+        return;
+      }
 
-      const isPasswordMatch = bcrypt.compareSync(password, user.password);
-      if (!isPasswordMatch) res.status(400).json({ error: '' });
+      if (!bcrypt.compareSync(password, user?.password)) {
+        res.status(400).json({ error: '' });
+        return;
+      }
 
-      return user;
+      res.send(user);
     } catch (e) {
       console.error(e);
       res.status(400).json({ error: '' });

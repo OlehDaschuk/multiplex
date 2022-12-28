@@ -3,8 +3,8 @@ import api from '.';
 import IStaff from '../interfaces/staff';
 import IUser from '../interfaces/user';
 
-export const getUser = (email: string, password: string): Promise<IUser | IStaff> =>
-  api.post(`/user`, { email, password });
+export const authUser = (email: string, password: string): Promise<IUser | IStaff> =>
+  api.post(`/login`, { email, password });
 export const createUser = ({ id, ...updatedData }: IUser): Promise<IUser> =>
   api.post(`/user/${id}`, updatedData);
 export const updateUser = ({ id, ...updatedData }: IUser): Promise<IUser> =>

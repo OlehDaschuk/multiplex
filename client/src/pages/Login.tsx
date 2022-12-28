@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
 
-import api from '../api/index';
+import { authUser } from '../api/user';
 
 import logo from '../assets/icons/logo.svg';
 import photo from '../assets/imgs/lk_login_img_new.png';
@@ -11,13 +11,24 @@ import photo from '../assets/imgs/lk_login_img_new.png';
 interface IFormData {
   email: string;
   password: string;
+  isSafe: boolean;
 }
 
 const Login: React.FC = () => {
   const { register, handleSubmit, watch, formState } = useForm<IFormData>();
-  const onSubmit: SubmitHandler<IFormData> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<IFormData> = async (data) => {
+    try {
+      const user = await authUser(data.email, data.password);
 
-  // useQuery({queryKey: ['user-login'], queryFn: })
+      if (data.isSafe) {
+        localStorage.setItem('uuid', user.uuid);
+      }
+
+      console.log(user);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     document.title = 'MULTIPLEX - login';
@@ -31,12 +42,10 @@ const Login: React.FC = () => {
     <div className="lg:flex">
       <div className="p-5 w-full h-screen flex flex-col items-center justify-between">
         <div className="">
-          <img className="mb-6 justify-self-end" src={logo} alt="logo" />
+          <img className="mb-6 mx-auto" src={logo} alt="logo" />
 
           <p className="text-center">Вхід до особистого кабінету</p>
           <p>Тут всі ваші замовлення та особиста інформація</p>
-
-          <form action="" method="post"></form>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-1">
@@ -44,17 +53,21 @@ const Login: React.FC = () => {
             {...register('email')}
             required
             className=""
-            type="text"
+            type="email"
             placeholder="Введіть пошту..."
           />
           <input
             {...register('password')}
             required
             className=""
-            type="text"
+            type="password"
             placeholder="Введіть пароль..."
           />
-          
+
+          <label htmlFor="isSafe">
+            <input type="radio" {...register('isSafe')} id="isSafe" /> Запам'ятайти мене.
+          </label>
+
           <button
             className="mt-4 border-black border-2 rounded-lg transition-colors duration-500 hover:bg-red-800"
             type="submit">
@@ -63,7 +76,7 @@ const Login: React.FC = () => {
         </form>
 
         <div>
-          <p className="text-sm mb-2 text-center">
+          <p className="text-sm mb-2 text-center hover:underline">
             Не маєте акаунт? <Link to="/signup">Створити.</Link>
           </p>
           <p className="text-xl">

@@ -1,7 +1,7 @@
 import api from '.';
 
-import IStaff from '../interfaces/staff';
-import IUser from '../interfaces/user';
+import IStaff from '../types/staff';
+import IUser from '../types/user';
 
 export const authUser = (email: string, password: string): Promise<IUser | IStaff> =>
   api.post(`/login`, { email, password });

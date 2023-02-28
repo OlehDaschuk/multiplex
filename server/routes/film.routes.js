@@ -7,5 +7,6 @@ const controller = require('../controller/film.controller');
 
 router.get('/films-in-rent', controller.getFilmsInRent);
 router.get('/number-of-available-films', controller.getNumberOfFilms);
+router.get('/films/:filmId', controller.getFilmById);
 
 module.exports = router;

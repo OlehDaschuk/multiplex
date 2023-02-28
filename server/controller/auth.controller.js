@@ -1,9 +1,7 @@
 const pool = require('../queries');
-const bcrypt = require('bcrypt');
-const { validationResult } = require('express-validator');
 
 class authController {
-  async registration(req, res) {
+  async registration(req, res, next) {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) res.status(400).json({ error: '', errors });
@@ -19,8 +17,6 @@ class authController {
         res.send({ error: 'Пошто вже зайнята.' });
       }
 
-      const hashPassword = bcrypt.hashSync(password, 10);
-
       const newUser = await pool.query(
         `INSERT INTO users (first_name, middle_name, last_name, gender, date_of_birth, email, password) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
         [
@@ -30,14 +26,13 @@ class authController {
           req.body.gender,
           req.body.date_of_birth,
           req.body.email,
-          hashPassword,
+          password,
         ]
       );
 
       res.status(201).json(newUser);
     } catch (e) {
-      console.error(e);
-      res.status(400).json({ error: '' });
+      next();
     }
   }
 
@@ -53,7 +48,7 @@ class authController {
         return;
       }
 
-      if (!bcrypt.compareSync(password, user?.password)) {
+      if (password === user?.password) {
         res.status(400).json({ error: '' });
         return;
       }

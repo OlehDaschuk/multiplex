@@ -1,20 +1,17 @@
 import { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 
-import { getUser } from '../api/user';
-
-import logo from '../assets/icons/logo.svg';
-import loginIcon from '../assets/icons/ava_temp1.svg';
-import menuIcon from '../assets/icons/menu.svg';
-import closeIcon from '../assets/icons/menu_close.png';
+import logo from '../../assets/icons/logo.svg';
+import loginIcon from '../../assets/icons/ava_temp1.svg';
+import menuIcon from '../../assets/icons/menu.svg';
+import closeIcon from '../../assets/icons/menu_close.png';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <>
-      <header className="z-50 bg-orange-900 h-[3.125rem] lg:h-[3.75rem] border-zinc-900	border-b-2 fixed top-0 inset-x-0 flex items-center justify-between flex-row-reverse lg:flex-row">
+      <header className="z-50 bg-primary h-[3.125rem] lg:h-[3.75rem] border-zinc-900	border-b-2 fixed top-0 inset-x-0 flex items-center justify-between flex-row-reverse lg:flex-row">
         <Link to="/">
           <img className="h-[3.125rem] lg:h-[3.75rem]" src={logo} alt="logo" />
         </Link>
@@ -24,7 +21,7 @@ export default function Header() {
       <div
         className={`${
           isMenuOpen ? 'left-0  lg:right-0' : '-left-full lg:-right-full'
-        } lg:left-auto z-50 fixed h-screen top-0 bottom-0 w-full sm:w-1/2 lg:w-1/3 p-8 border-zinc-900 sm:border-r-4 lg:border-r-0 lg:border-l-4 bg-orange-900 transition-[left] lg:transition-[right]`}>
+        } lg:left-auto z-50 fixed h-screen top-0 bottom-0 w-full sm:w-1/2 lg:w-1/3 p-8 border-zinc-900 sm:border-r-4 lg:border-r-0 lg:border-l-4 bg-primary transition-[left] lg:transition-[right]`}>
         <div className="flexa lg:flex-row-reverse">
           <img onClick={() => setIsMenuOpen(false)} src={closeIcon} alt="close icon" />
         </div>

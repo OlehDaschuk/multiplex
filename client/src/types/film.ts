@@ -1,4 +1,4 @@
-export default interface IFilms {
+export interface IFilm {
   id: number;
   name: string;
   age: number;
@@ -13,7 +13,7 @@ export default interface IFilms {
   starring: string;
   rating: number;
   description: string;
-  rental_start: Date;
-  rental_ending: Date;
+  rental_start: string;
+  rental_ending: string;
   cover_url: string;
 }

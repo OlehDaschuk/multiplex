@@ -1,28 +1,29 @@
-import React, { useState } from 'react';
-import { Routes, Route, Form } from 'react-router-dom';
+import React, { Suspense } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import Header from './components/Header';
-import AuthContext from './context/AuthContext';
+const Header = React.lazy(() => import('./components/shared/Header'));
 
-import Home from './pages/Home/Home';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Film from './pages/Film';
+const Home = React.lazy(() => import('./pages/Home'));
+const Login = React.lazy(() => import('./pages/Login'));
+const Signup = React.lazy(() => import('./pages/Signup'));
+const Film = React.lazy(() => import('./pages/Film'));
 
-const App: React.FC = () => {
+export default function App() {
   return (
-    <AuthContext.Provider value={{ uuid: localStorage.getItem('uuid') }}>
-      <Routes>
-        <Route path="/" element={<Header />} />
-      </Routes>
+    <BrowserRouter>
+      <Suspense fallback={<p>Loading...</p>}>
+        <Routes>
+          <Route path="/" element={<Header />} />
+          <Route path="/film/:id" element={<Header />} />
+        </Routes>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
-    </AuthContext.Provider>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/film/:id" element={<Film />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
   );
-};
-
-export default App;
+}

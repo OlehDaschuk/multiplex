@@ -1,9 +1,23 @@
 const pool = require('../queries');
 
 class FilmController {
-  async getNumberOfFilms(req, res) {
-    const data = await pool.query(`SELECT count(id) FROM users;`);
-    res.send(data.rows[0]);
+  async getNumberOfFilms(req, res, next) {
+    try {
+      const data = await pool.query(`SELECT count(id) FROM users;`);
+      res.send(data.rows[0]);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async getFilmById(req, res, next) {
+    try {
+      const data = await pool.query(`SELECT * FROM films WHERE id = $1;`, [req.params.filmId]);
+      console.log(data.rows[0]);
+      res.send(data.rows[0]);
+    } catch (e) {
+      next(e);
+    }
   }
 
   async getFilmsInRent(req, res) {
